@@ -51,9 +51,9 @@ cv::Mat fall(std::vector<HumanPose> poses, cv::Mat frame){
         if(judge(keypoint[0],keypoint[1],keypoint[2])){
             //cout<<"falling"<<endl;
 
-		rect = cv::minAreaRect(keypoint);
-		cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
-        std::cout<<"keypoint"<<keypoint<<endl;
+		    rect = cv::minAreaRect(keypoint);
+		    cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
+            std::cout<<"keypoint"<<keypoint<<endl;
             cv::putText(frame,"falling",cv::Point(x_min+7,y_min-4), cv::FONT_HERSHEY_SIMPLEX, 0.6,cv::Scalar(255,255,255),1,8);
         }
 
