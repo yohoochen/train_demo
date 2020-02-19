@@ -7,7 +7,7 @@ find_package(CUDA REQUIRED)
 find_package(OpenCV REQUIRED)
 
 # pose lib
-set(CMAKE_PREFIX_PATH /home/nvidia/torch1.1)
+set(CMAKE_PREFIX_PATH /home/nvidia/demo/torch1.1)
 find_package(Torch REQUIRED)
 
 add_definitions(-std=c++11)
@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Ofast" )
 #include_directories(./include/ ${CUDA_HOME}/include/ ${TensorRT_HOME}/include/ )
 include_directories(./include/ ${CUDA_HOME}/include/ )
 link_directories(/usr/include/aarch64-linux-gnu ${CUDA_HOME}/lib64 )
-link_directories(/home/nvidia/torch1.1)
+link_directories(/home/nvidia/demo/torch1.1)
 
 # 设置要链接的库文件
 SET( LIB_PROJECT glog boost_system protobuf boost_thread gflags libnvonnxparser.so  libnvinfer_plugin.so  libnvparsers.so libnvonnxparser_runtime.so libnvinfer.so cudart)
