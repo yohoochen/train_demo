@@ -32,9 +32,9 @@ namespace human_pose_estimation {
         } else {
             LOG(INFO) << "GPU detected, CUDA enable.";
         }
-        _module_not_ptr = torch::jit::load(modelPath);
-        module = std::make_shared<torch::jit::script::Module>(_module_not_ptr);
-//        module = torch::jit::load(modelPath);
+//        _module_not_ptr = torch::jit::load(modelPath);
+//        module = std::make_shared<torch::jit::script::Module>(_module_not_ptr);
+        module = torch::jit::load(modelPath);
 
         module->to(device_type);
         assert(module != nullptr);
