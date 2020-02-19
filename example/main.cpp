@@ -2,6 +2,7 @@
 // Created by chen on 19-12-26.
 //
 #include <string>
+#include <math.h>
 #include <iostream>
 #include <Object_detect.h>
 #include <ObjProcess.h>
@@ -23,15 +24,17 @@ using namespace human_pose_estimation;
 using namespace cv;
 typedef std::pair<string, int> Result;
 
-bool judge(const vector<float> &neck, const vector<float> &rhip, const vector<float> &lhip){
+//&neck&rhip&lhip[0,1,2]
+bool judge(const float body[][2]) {
     float center[2];
-    if(neck[0] == -1 || rhip[0] == -1 || lhip[0] == -1){
+    if(body[0][0] == -1 || body[1][0] == -1 || body[2][0] == -1){
         return false;
     }
-    center[0] = (rhip[0] + lhip[0])/2;
-    center[1] = (rhip[1] + lhip[1])/2;
-    float k = (center[1]-neck[1])/(neck[0]-center[0]);
-    if(k >= 0.75 || k <= -1){
+    center[0] = (body[1][0] + body[2][0])/2;
+    center[1] = (body[1][1] + body[2][1])/2;
+    float k = atan2(center[1]-body[0][1],body[0][0]-center[0]);
+	cout<<"k  "<<k<<"++"<<M_PI*5/12<<"++"<<M_PI*7/12<<endl;
+    if(k >= M_PI*4/12 && k <= M_PI*8/12){
         return false;
     }
     return true;
@@ -39,22 +42,21 @@ bool judge(const vector<float> &neck, const vector<float> &rhip, const vector<fl
 
 cv::Mat fall(std::vector<HumanPose> poses, cv::Mat frame){
     vector<cv::Point2f> keypoint;
-	int body[3][2];
 	RotatedRect rect;
     for (HumanPose const& pose : poses) {
 		for(cv::Point2f point : pose.keypoints){
 			if(int(point.x) == -1){continue;}
 			keypoint.push_back(point);
 		}
-        body = {{pose.keypoints[1].x , pose.keypoints[1].y}, {pose.keypoints[8].x, pose.keypoints[8].y}, {pose.keypoints[11].x, pose.keypoints[11].y}};
+        float body[3][2] = {{pose.keypoints[1].x , pose.keypoints[1].y}, {pose.keypoints[8].x, pose.keypoints[8].y}, {pose.keypoints[11].x, pose.keypoints[11].y}};
 
-        if(judge(keypoint[0],keypoint[1],keypoint[2])){
-            //cout<<"falling"<<endl;
+        if(judge(body)){
+            cout<<"falling"<<endl;
 
 		    rect = cv::minAreaRect(keypoint);
 		    cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
-            std::cout<<"keypoint"<<keypoint<<endl;
-            cv::putText(frame,"falling",cv::Point(x_min+7,y_min-4), cv::FONT_HERSHEY_SIMPLEX, 0.6,cv::Scalar(255,255,255),1,8);
+            //std::cout<<"keypoint"<<keypoint<<endl;
+            cv::putText(frame,"falling",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(255,255,255),4,8);
         }
 
     }
@@ -72,7 +74,7 @@ int main(int argc, const char** argv){
     Object_Detection::Object_detect net(model_file);
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
-    cv::VideoCapture cap("fall/2.avi");
+    cv::VideoCapture cap("fall/1.avi");
 //    cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
