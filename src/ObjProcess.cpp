@@ -71,7 +71,7 @@ namespace Object_Detection
     void postProcess(std::vector<Detection> & result,const cv::Mat& img)
     {
         using namespace cv;
-        int mark;
+//        int mark;
         int inputSize = Object_Detection::inputSize;
         float scale = min(float(inputSize)/img.cols,float(inputSize)/img.rows);
         float dx = (inputSize - scale * img.cols) / 2;

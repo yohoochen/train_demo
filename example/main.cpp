@@ -95,22 +95,22 @@ int main(int argc, const char** argv){
         int start = cv::getTickCount();
 //        pose estimation code
         std::vector<HumanPose> poses = estimator.estimate(frame);
-        frame = pose(poses, frame);
+        frame2 = pose(poses, frame);
 
 //        human detection
         net.detect(frame, Obj_pool);
         Result result;
 //        draw img
-        renderHumanPose(poses, frame);
-        Object_Detection::getResult(result, frame, Obj_pool);
+        renderHumanPose(poses, frame2);
+        Object_Detection::getResult(result, frame2, Obj_pool);
         std::cout<<"status:  "<<result.first<<"   numbers:  "<<result.second<<std::endl;
-        cv::putText(frame, result.first, cv::Point(900, 50),cv::FONT_HERSHEY_SIMPLEX,2,cv::Scalar(0,0,255),4,8);
-        cv::putText(frame, "number: "+to_string(result.second), cv::Point(0, 200),cv::FONT_HERSHEY_SIMPLEX,2,cv::Scalar(0,0,255),4,8);
+        cv::putText(frame2, result.first, cv::Point(900, 50),cv::FONT_HERSHEY_SIMPLEX,2,cv::Scalar(0,0,255),4,8);
+        cv::putText(frame2, "number: "+to_string(result.second), cv::Point(0, 200),cv::FONT_HERSHEY_SIMPLEX,2,cv::Scalar(0,0,255),4,8);
 //        output video
         int end_tick = cv::getTickCount();
         std::cout << " detect time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
-        cv::imshow("result",frame);
-        outputVideo<< frame;
+        cv::imshow("result",frame2);
+        outputVideo<< frame2;
 //        waitkey
         if((cv::waitKey(1)& 0xff) == 27){
             cv::destroyAllWindows();

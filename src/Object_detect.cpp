@@ -333,7 +333,8 @@ namespace Object_Detection
         }
         memory.emplace_back(i);
         int p[3] = {0, 0, 0};
-        for(int i = 0; i<memory.size(); i++){
+        int size = memory.size();
+        for(int i = 0; i< size; i++){
             p[memory[i]]++;
         }
         int max = 0;
