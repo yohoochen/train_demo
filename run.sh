@@ -2,11 +2,13 @@
 # usage: run.sh camera or run.sh video
 set -e
 
-cd build
+cd bin
+rm -rf *
+cd ../build
 rm -rf *
 cmake ..
 make -j12
 cd ../
-./bin/buildEngine
+#./bin/buildEngine
 #./bin/runDet
 ./bin/pose_test

@@ -43,7 +43,7 @@ cv::Mat pose(std::vector<HumanPose> poses, cv::Mat frame){
         std::stringstream rawPose;
         rawPose << std::fixed << std::setprecision(0);
         rawPose << pose.score;
-        std::cout<<"pose.keypoints"<<pose.keypoints<<endl;
+        //std::cout<<"pose.keypoints"<<pose.keypoints<<endl;
         keypoint = {{pose.keypoints[1].x , pose.keypoints[1].y}, {pose.keypoints[8].x, pose.keypoints[8].y}, {pose.keypoints[11].x, pose.keypoints[11].y}};
         float x_max = 0.0 , y_max = 0.0 , x_min = 1280.0, y_min = 720.0;
 
@@ -54,7 +54,7 @@ cv::Mat pose(std::vector<HumanPose> poses, cv::Mat frame){
             if(point.y < y_min){y_min = point.y;}
         }
         if(judge(keypoint[0],keypoint[1],keypoint[2])){
-            cout<<"falling"<<endl;
+            //cout<<"falling"<<endl;
             cv::rectangle(frame, {int(x_min), int(y_min)}, {int(x_max), int(y_max)}, cv::Scalar(0, 0, 255), 2);
             cv::putText(frame,"falling",cv::Point(x_min+7,y_min-4), cv::FONT_HERSHEY_SIMPLEX, 0.6,cv::Scalar(255,255,255),1,8);
         }
@@ -73,7 +73,7 @@ int main(int argc, const char** argv){
     Object_Detection::Object_detect net(model_file);
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
-    cv::VideoCapture cap("vlc.mp4");
+    cv::VideoCapture cap("fall/1.avi");
 //    cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
@@ -90,6 +90,7 @@ int main(int argc, const char** argv){
         cout << "Open video error !"<<endl;
         return -1;
     }
+	cv::Mat frame2;
     while (cap.read(frame))
     {
         int start = cv::getTickCount();
@@ -112,7 +113,7 @@ int main(int argc, const char** argv){
         cv::imshow("result",frame2);
         outputVideo<< frame2;
 //        waitkey
-        if((cv::waitKey(1)& 0xff) == 27){
+        if(cv::waitKey(1) == 'q'){
             cv::destroyAllWindows();
             return 0;
         }

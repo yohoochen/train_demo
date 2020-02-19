@@ -30,8 +30,8 @@ file(GLOB CPP_SRC
         src/ObjProcess.cpp)
 file(GLOB CU_SRC src/ObjectLayer.cu)
 
-cuda_add_executable(buildEngine example/buildEngine.cpp ${CPP_SRC} ${CU_SRC})
-target_link_libraries(buildEngine ${OpenCV_LIBS} ${LIB_PROJECT})
+#cuda_add_executable(buildEngine example/buildEngine.cpp ${CPP_SRC} ${CU_SRC})
+#target_link_libraries(buildEngine ${OpenCV_LIBS} ${LIB_PROJECT})
 
 #cuda_add_executable(runDet example/runDet.cpp ${CPP_SRC} ${CU_SRC})
 #target_link_libraries(runDet ${OpenCV_LIBS} ${LIB_PROJECT})
