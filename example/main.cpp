@@ -75,9 +75,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 	int size = persons.size();
 	RotatedRect rect;
     for (int i = 0; i< size; i++){
-
-//		if(persons[i][0].keypoints[4].x == -1 || persons[i][0].keypoints[3].x == -1){ continue; }
-
+        
 		cout<<"11"<<endl;
 
 		// angle
