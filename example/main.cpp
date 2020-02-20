@@ -6,6 +6,7 @@
 #include <iostream>
 #include <Object_detect.h>
 #include <ObjProcess.h>
+#include <algorithm>
 #include <memory>
 #include <queue>
 #include <torch/script.h> // One-stop header.
@@ -40,7 +41,7 @@ bool judge(const float body[][2]) {
     return true;
 }
 
-cv::Mat fall(std::vector<HumanPose> poses, cv::Mat frame){
+void fall(std::vector<HumanPose> poses, cv::Mat &frame){
     vector<cv::Point2f> keypoint;
 	RotatedRect rect;
     for (HumanPose const& pose : poses) {
@@ -60,7 +61,56 @@ cv::Mat fall(std::vector<HumanPose> poses, cv::Mat frame){
         }
 
     }
-    return frame;
+}
+double getDistance(cv::Point2f pointO,cv::Point2f pointA)
+{
+    double distance;
+    distance = powf((pointO.x - pointA.x),2) + powf((pointO.y - pointA.y),2);
+    distance = sqrtf(distance);
+    return distance;
+}
+
+void waving(vector<vector<Point2f>> &persons,cv::Mat &frame){
+    for (int i = 0; i< persons.size(); i++){
+        if(persons[i][7].y < persons[i][6]){
+
+        }
+    }
+}
+
+//0nose, 1neck, 2Rsho, 3Relb, 4Rwri, 5Lsho, 6Lelb, 7Lwri, 8Rhip, 9Rkne, 10Rank, 11Lhip, 12Lkne, 13Lank, 14Leye, 15Reye, 16Lear, 17Rear
+void wave_hands(std::vector<HumanPose> poses, cv::Mat &frame){
+    vector<cv::Point2f> person;
+    vector<cv::Point2f> single_pose;
+    vector<vector<single_pose>> all_poses;
+    vector<double> d;
+    int count = 0;
+    for (HumanPose const& pose : poses) {
+        if(int(pose.keypoints[1].x) == -1){ continue;}
+        for(cv::Point2f point : pose.keypoints){
+            all_poses[count].push_back(point);
+        }
+        for (int i = 0; i < person.size(); i++){
+            double d.push_back(getDistance(person[i], pose.keypoints[1]))
+
+        }
+        std::vector<double>::iterator biggest = std::max_element(std::begin(d), std::end(d));
+
+        if(*biggest > 10){
+            person.push_back(pose.keypoints[1]);
+            all_poses.push_back({pose.keypoints})
+            continue;
+        }
+        int index = std::distance(std::begin(d), biggest);
+        //everyone's neck position
+        person[index] = pose.keypoints[1];
+        //everyone's keypoints
+        if(all_poses[index].size()>15){
+            all_poses[index].erase(begin(d));
+        }
+        all_poses[index].push_back(pose.keypoints);
+        waving(all_poses, frame);
+    }
 }
 
 int main(int argc, const char** argv){
@@ -102,7 +152,7 @@ int main(int argc, const char** argv){
         Result result;
 //        draw img
 	// draw falling
-        frame = fall(poses, frame);
+        fall(poses, frame);
 	// draw pose
         renderHumanPose(poses, frame);
 	//draw head
