@@ -269,16 +269,16 @@ namespace Object_Detection
         cv::rectangle(img_,cv::Point(pt_lt.x,pt_lt.y),pt_br,color,2);
         cv::rectangle(img_,cv::Point(pt_lt.x,pt_lt.y-15),cv::Point(pt_lt.x + name.length()*15,pt_lt.y),color,-1);
         cv::putText(img_,name,cv::Point(pt_lt.x+7,pt_lt.y-4), cv::FONT_HERSHEY_SIMPLEX, 0.6,cv::Scalar(255,255,255),1,8);
-        cv::Point a = cv::Point(pt_lt.x,pt_br.y);
-        cv::Point b = cv::Point(pt_br.x,pt_lt.y);
-        double result1 = pointPolygonTest(contours, pt_lt, false);
-        double result2 = pointPolygonTest(contours, pt_br, false);
-        double result3 = pointPolygonTest(contours, a, false);
-        double result4 = pointPolygonTest(contours, b, false);
-        if(result1 == 1 || result2 == 1 || result3 == 1 || result4 == 1){
-            return true;
-        }
-        return false;
+//        cv::Point a = cv::Point(pt_lt.x,pt_br.y);
+//        cv::Point b = cv::Point(pt_br.x,pt_lt.y);
+//        double result1 = pointPolygonTest(contours, pt_lt, false);
+//        double result2 = pointPolygonTest(contours, pt_br, false);
+//        double result3 = pointPolygonTest(contours, a, false);
+//        double result4 = pointPolygonTest(contours, b, false);
+//        if(result1 == 1 || result2 == 1 || result3 == 1 || result4 == 1){
+//            return true;
+//        }
+//        return false;
 //        std::cout<<result<<std::endl;
     }
 
@@ -296,34 +296,36 @@ namespace Object_Detection
     }
 
     void getResult(std::pair<std::string, int> &result, cv::Mat &img, std::vector<Object> &Obj_pool) {
-        int count = 0;
-        int count2 = 0;
+//        int count = 0;
+        int count = Obj_pool.size();
+//        int count2 = 0;
         int num;
-        cv::line(img,cv::Point(0, 80),cv::Point(1280, 80),cv::Scalar(0, 0, 255),3);
-        cv::line(img,cv::Point(350, 720),cv::Point(550, 80),cv::Scalar(0, 0, 255),3);
+        //cv::line(img,cv::Point(0, 80),cv::Point(1280, 80),cv::Scalar(0, 0, 255),3);
+        //cv::line(img,cv::Point(350, 720),cv::Point(550, 80),cv::Scalar(0, 0, 255),3);
 //        cv::line(img_,cv::Point(550, 80),cv::Point(730, 80),cv::Scalar(0, 0, 255),3);
-        cv::line(img,cv::Point(730, 80),cv::Point(930, 720),cv::Scalar(0, 0, 255),3);
+        //cv::line(img,cv::Point(730, 80),cv::Point(930, 720),cv::Scalar(0, 0, 255),3);
         for (size_t i = 0; i < Obj_pool.size(); i++){
             cv::Point tl = Obj_pool[i].boundingbox.tl();
             cv::Point br = cv::Point(tl.x + Obj_pool[i].boundingbox.width,tl.y + Obj_pool[i].boundingbox.height);
-            if(draw_bb_top(img, Object_Detection::CLASSES[Obj_pool[i].label], tl, br, Object_Detection::COLOR[Obj_pool[i].label])){
-                count++;
-            }
-            if(area(img, Object_Detection::CLASSES[Obj_pool[i].label], tl, br, Object_Detection::COLOR[Obj_pool[i].label])){
-                count2++;
-            }
+//            if(draw_bb_top(img, Object_Detection::CLASSES[Obj_pool[i].label], tl, br, Object_Detection::COLOR[Obj_pool[i].label])){
+//                count++;
+//            }
+//            if(area(img, Object_Detection::CLASSES[Obj_pool[i].label], tl, br, Object_Detection::COLOR[Obj_pool[i].label])){
+//                count2++;
+//            }
+            draw_bb_top(img, Object_Detection::CLASSES[Obj_pool[i].label], tl, br, Object_Detection::COLOR[Obj_pool[i].label]);
         }
-        if(count <= 3){
+        if(count <= 10){
             getMemory(0,num);
             result.first = Object_Detection::STATUS[num];
-        }else if(count < 6){
+        }else if(count < 15){
             getMemory(1,num);
             result.first = Object_Detection::STATUS[num];
         }else{
             getMemory(2,num);
             result.first = Object_Detection::STATUS[num];
         }
-        result.second = count2;
+        result.second = count;
     }
 
     void getMemory(int i, int &num) {
