@@ -75,8 +75,9 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 	int size = persons.size();
 	RotatedRect rect;
     for (int i = 0; i< size; i++){
-		if(persons[i][0].keypoints[4].x == -1 || persons[i][0].keypoints[3].x == -1){ continue; }
-		if(persons[i][0].keypoints[4].y >= persons[i][0].keypoints[3].y){ continue; }
+
+//		if(persons[i][0].keypoints[4].x == -1 || persons[i][0].keypoints[3].x == -1){ continue; }
+
 		cout<<"11"<<endl;
 
 		// angle
@@ -91,7 +92,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 			if(angle < min){ min = angle; }
 		}
 		cout<<"22"<<min<<"++"<<max<<"++"<<M_PI*1/3<<endl;
-		
+
 
 		if((max - min) > M_PI*1/3){
 			vector<cv::Point2f> keypoint;
@@ -107,7 +108,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
             //std::cout<<"keypoint"<<keypoint<<endl;
             cv::putText(frame,"waving",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(0,0,0),4,8);
 			cout<<"22-2"<<endl;
-			
+
 		}
 		cout<<"33"<<endl;
 	}
@@ -160,6 +161,18 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
 		cout<<"4"<<endl;
 
     }
+    int o = all_poses.size();
+    for (int i = 0; i< o; i++) {
+        for (auto it=all_poses.begin()+1; it!=all_poses.end(); it++){
+            if(*it.keypoints[4].x == -1 || *it.keypoints[3].x == -1){
+                all_poses.erase(it);
+            }
+            if(*it.keypoints[4].y >= *it.keypoints[3].y){
+                persons.erase(persons[i].begin(), it)
+            }
+        }
+    }
+
     waving(all_poses, frame);
 }
 
