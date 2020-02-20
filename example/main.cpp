@@ -35,16 +35,16 @@ bool judge(const float body[][2]) {
     center[1] = (body[1][1] + body[2][1])/2;
     float k = atan2(center[1]-body[0][1],body[0][0]-center[0]);
 	cout<<"k  "<<k<<"++"<<M_PI*5/12<<"++"<<M_PI*7/12<<endl;
-    if(k >= M_PI*4/12 && k <= M_PI*8/12){
+    if(k >= M_PI*4/12 && k <= M_PI*9/12){
         return false;
     }
     return true;
 }
 
 void fall(std::vector<HumanPose> poses, cv::Mat &frame){
-    vector<cv::Point2f> keypoint;
 	RotatedRect rect;
     for (HumanPose const& pose : poses) {
+    	vector<cv::Point2f> keypoint;
 		for(cv::Point2f point : pose.keypoints){
 			if(int(point.x) == -1){continue;}
 			keypoint.push_back(point);
@@ -67,50 +67,100 @@ double getDistance(cv::Point2f pointO,cv::Point2f pointA)
     double distance;
     distance = powf((pointO.x - pointA.x),2) + powf((pointO.y - pointA.y),2);
     distance = sqrtf(distance);
+	//cout<<"distance  "<<distance<<endl;
     return distance;
 }
 
-void waving(vector<vector<Point2f>> &persons,cv::Mat &frame){
-    for (int i = 0; i< persons.size(); i++){
-        if(persons[i][7].y < persons[i][6]){
+void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
+	int size = persons.size();
+	RotatedRect rect;
+    for (int i = 0; i< size; i++){
+		if(persons[i][0].keypoints[4].x == -1 || persons[i][0].keypoints[3].x == -1){ continue; }
+		if(persons[i][0].keypoints[4].y >= persons[i][0].keypoints[3].y){ continue; }
+		cout<<"11"<<endl;
 
-        }
-    }
+		// angle
+		float max = 0;
+		float min = 2*M_PI;
+		float angle;
+		int n = persons[i].size();
+		for(int j = 0; j< n; j++){
+			angle = atan2(persons[i][j].keypoints[3].y - persons[i][j].keypoints[4].y, persons[i][j].keypoints[4].x - persons[i][j].keypoints[3].x);
+			cout<<persons[i][j].keypoints[3].y - persons[i][j].keypoints[4].y<<"+++"<<persons[i][j].keypoints[4].x - persons[i][j].keypoints[3].x<<"+++"<<angle<<endl;
+			if(angle > max){ max = angle; }
+			if(angle < min){ min = angle; }
+		}
+		cout<<"22"<<min<<"++"<<max<<"++"<<M_PI*1/3<<endl;
+		
+
+		if((max - min) > M_PI*1/3){
+			vector<cv::Point2f> keypoint;
+			for(cv::Point2f point : persons[i][n].keypoints){
+				cout<<point.x<<"++"<<point.y<<endl;
+				if(int(point.x) == -1){continue;}
+				keypoint.push_back(point);
+			}
+            cout<<"waving"<<n<<endl;
+		    rect = cv::minAreaRect(keypoint);
+			cout<<"22-1"<<endl;
+		    cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
+            //std::cout<<"keypoint"<<keypoint<<endl;
+            cv::putText(frame,"waving",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(0,0,0),4,8);
+			cout<<"22-2"<<endl;
+			
+		}
+		cout<<"33"<<endl;
+	}
+
 }
 
 //0nose, 1neck, 2Rsho, 3Relb, 4Rwri, 5Lsho, 6Lelb, 7Lwri, 8Rhip, 9Rkne, 10Rank, 11Lhip, 12Lkne, 13Lank, 14Leye, 15Reye, 16Lear, 17Rear
-void wave_hands(std::vector<HumanPose> poses, cv::Mat &frame){
-    vector<cv::Point2f> person;
-    vector<cv::Point2f> single_pose;
-    vector<vector<single_pose>> all_poses;
-    vector<double> d;
-    int count = 0;
+void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2f> &person,   vector<vector<HumanPose>> &all_poses){
+
     for (HumanPose const& pose : poses) {
+		// has neck or not
         if(int(pose.keypoints[1].x) == -1){ continue;}
-        for(cv::Point2f point : pose.keypoints){
-            all_poses[count].push_back(point);
-        }
-        for (int i = 0; i < person.size(); i++){
-            double d.push_back(getDistance(person[i], pose.keypoints[1]))
+		// put neck in person vector
+		int size = person.size();
+		if(size == 0){
+			person.push_back(pose.keypoints[1]);
+			all_poses.push_back({pose});
+			continue;
+		}
+		cout<<"1"<<endl;
 
+		double min = 100000;
+		int index = 0;
+        for (int i = 0; i < size; i++){
+			double t = getDistance(person[i], pose.keypoints[1]);
+			if(t < min){
+				index = i;
+				min = t;
+			}
         }
-        std::vector<double>::iterator biggest = std::max_element(std::begin(d), std::end(d));
+		cout<<"2"<<endl;
 
-        if(*biggest > 10){
+        if( min > 100){
+			//cout<<"2.1"<<endl;
             person.push_back(pose.keypoints[1]);
-            all_poses.push_back({pose.keypoints})
+			//cout<<"2.2"<<endl;
+            all_poses.push_back({pose});
+			//cout<<"2.3"<<endl;
             continue;
         }
-        int index = std::distance(std::begin(d), biggest);
+		cout<<"3"<<endl;
+
         //everyone's neck position
         person[index] = pose.keypoints[1];
         //everyone's keypoints
-        if(all_poses[index].size()>15){
-            all_poses[index].erase(begin(d));
+        if(all_poses[index].size()>20){
+            all_poses[index].erase(begin(all_poses[index]));
         }
-        all_poses[index].push_back(pose.keypoints);
-        waving(all_poses, frame);
+        all_poses[index].push_back(pose);
+		cout<<"4"<<endl;
+
     }
+    waving(all_poses, frame);
 }
 
 int main(int argc, const char** argv){
@@ -124,7 +174,7 @@ int main(int argc, const char** argv){
     Object_Detection::Object_detect net(model_file);
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
-    cv::VideoCapture cap("fall/1.avi");
+    cv::VideoCapture cap("help/3.mp4");
 //    cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
@@ -134,14 +184,21 @@ int main(int argc, const char** argv){
     cv::VideoWriter outputVideo;
     cv::Size s = cv::Size((int)cap.get(CV_CAP_PROP_FRAME_WIDTH),
                           (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-    outputVideo.open("g_video/head.avi", CV_FOURCC('X','V','I','D'), 25.0,
+    outputVideo.open("g_video/wave.avi", CV_FOURCC('X','V','I','D'), 25.0,
                      s, true);
+
+	// keep
+	vector<vector<HumanPose>> all_poses;
+    // eyeryone's neck
+	vector<cv::Point2f> person;
+
+
     if (!outputVideo.isOpened())
     {
         cout << "Open video error !"<<endl;
         return -1;
     }
-
+	
     while (cap.read(frame))
     {
         int start = cv::getTickCount();
@@ -153,6 +210,8 @@ int main(int argc, const char** argv){
 //        draw img
 	// draw falling
         fall(poses, frame);
+	// draw waving
+		wave_hands(poses, frame, person, all_poses);
 	// draw pose
         renderHumanPose(poses, frame);
 	//draw head

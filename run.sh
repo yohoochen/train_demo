@@ -8,6 +8,7 @@ cd ../build
 rm -rf *
 cmake ..
 make -j12
+#make
 cd ../
 #./bin/buildEngine
 #./bin/runDet

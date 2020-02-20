@@ -35,7 +35,7 @@ namespace Object_Detection
 //    void draw_bb_top(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color);
     static std::deque<int> memory;
 
-    bool draw_bb_top(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color);
+    void draw_bb_top(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color);
     bool area(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color);
     void getResult(std::pair<std::string, int> &result, cv::Mat &img, std::vector<Object> &Obj_pool);
     void getMemory(int i, int &max);

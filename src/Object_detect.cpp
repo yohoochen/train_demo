@@ -264,7 +264,7 @@ namespace Object_Detection
     }
 
 
-    bool draw_bb_top(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color){
+    void draw_bb_top(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color){
       //cv::rectangle(img_,cv::Point(pt_lt.x,pt_lt.y-15),pt_br,color,2);
         cv::rectangle(img_,cv::Point(pt_lt.x,pt_lt.y),pt_br,color,2);
         cv::rectangle(img_,cv::Point(pt_lt.x,pt_lt.y-15),cv::Point(pt_lt.x + name.length()*15,pt_lt.y),color,-1);
