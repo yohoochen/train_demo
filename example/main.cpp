@@ -73,6 +73,7 @@ double getDistance(cv::Point2f pointO,cv::Point2f pointA)
 
 void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 	int size = persons.size();
+	cout<<"00  "<<size<<endl;
 	RotatedRect rect;
     for (int i = 0; i< size; i++){
         
@@ -83,18 +84,23 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 		float min = 2*M_PI;
 		float angle;
 		int n = persons[i].size();
+		cout<<"n  "<<n<<endl;
+		if(n == 0){
+			//persons.erase(persons.begin());
+			continue;		
+		}
 		for(int j = 0; j< n; j++){
 			angle = atan2(persons[i][j].keypoints[3].y - persons[i][j].keypoints[4].y, persons[i][j].keypoints[4].x - persons[i][j].keypoints[3].x);
-			cout<<persons[i][j].keypoints[3].y - persons[i][j].keypoints[4].y<<"+++"<<persons[i][j].keypoints[4].x - persons[i][j].keypoints[3].x<<"+++"<<angle<<endl;
+			cout<<persons[i][j].keypoints[3].y<<"&&&"<<persons[i][j].keypoints[4].y<<"&&&"<<persons[i][j].keypoints[4].x<<"&&&"<<persons[i][j].keypoints[3].x<<"&&&"<<angle<<endl;
 			if(angle > max){ max = angle; }
 			if(angle < min){ min = angle; }
 		}
-		cout<<"22"<<min<<"++"<<max<<"++"<<M_PI*1/3<<endl;
+		cout<<"22   "<<min<<"((("<<max<<"((("<<M_PI*1/3<<endl;
 
 
 		if((max - min) > M_PI*1/3){
 			vector<cv::Point2f> keypoint;
-			for(cv::Point2f point : persons[i][n].keypoints){
+			for(cv::Point2f point : persons[i][n-1].keypoints){
 				cout<<point.x<<"++"<<point.y<<endl;
 				if(int(point.x) == -1){continue;}
 				keypoint.push_back(point);
@@ -103,8 +109,8 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 		    rect = cv::minAreaRect(keypoint);
 			cout<<"22-1"<<endl;
 		    cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
-            //std::cout<<"keypoint"<<keypoint<<endl;
-            cv::putText(frame,"waving",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(0,0,0),4,8);
+            std::cout<<"keypoint"<<keypoint<<endl;
+			cv::putText(frame,"waving",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(0,0,0),4,8);
 			cout<<"22-2"<<endl;
 
 		}
@@ -115,12 +121,16 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 
 //0nose, 1neck, 2Rsho, 3Relb, 4Rwri, 5Lsho, 6Lelb, 7Lwri, 8Rhip, 9Rkne, 10Rank, 11Lhip, 12Lkne, 13Lank, 14Leye, 15Reye, 16Lear, 17Rear
 void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2f> &person,   vector<vector<HumanPose>> &all_poses){
-
+	
+	cout<<"here"<<endl;
     for (HumanPose const& pose : poses) {
+		cout<<"0.1"<<endl;
 		// has neck or not
         if(int(pose.keypoints[1].x) == -1){ continue;}
+		cout<<"0.2"<<endl;
 		// put neck in person vector
 		int size = person.size();
+		cout<<"0.3"<<"size  "<<size<<endl;
 		if(size == 0){
 			person.push_back(pose.keypoints[1]);
 			all_poses.push_back({pose});
@@ -137,7 +147,7 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
 				min = t;
 			}
         }
-		cout<<"2"<<endl;
+		cout<<"2   "<<min<<endl;
 
         if( min > 100){
 			//cout<<"2.1"<<endl;
@@ -160,14 +170,24 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
 
     }
     int o = all_poses.size();
+	cout<<"o  "<<o<<endl;
     for (int i = 0; i< o; i++) {
-        for (auto it=all_poses.begin()+1; it!=all_poses.end(); it++){
-            if(*it.keypoints[4].x == -1 || *it.keypoints[3].x == -1){
-                all_poses.erase(it);
+		cout<<"here2  "<<i<<endl;
+        for (vector<HumanPose>::iterator  it = all_poses[i].begin(); it != all_poses[i].end();){
+			cout<<"here3"<<endl;
+			//cout<<(*it).keypoints<<endl;
+            if((*it).keypoints[4].x == -1 || (*it).keypoints[3].x == -1){
+				cout<<"here4"<<endl;
+                it = all_poses[i].erase(it);
+				cout<<"here4.1"<<endl;
+				continue;
             }
-            if(*it.keypoints[4].y >= *it.keypoints[3].y){
-                persons.erase(persons[i].begin(), it)
+            if((*it).keypoints[4].y >= (*it).keypoints[3].y){
+				cout<<"here5"<<endl;
+                it = all_poses[i].erase(all_poses[i].begin(), it+1);
+				continue;
             }
+			it++;
         }
     }
 
