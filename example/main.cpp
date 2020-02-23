@@ -170,8 +170,19 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
 
     }
     int o = all_poses.size();
-	cout<<"o  "<<o<<endl;
-    for (int i = 0; i< o; i++) {
+	int k = poses.size();
+	cout<<"o  "<<o<<"    k  "<<k<<endl;
+	cout<<all_poses.size()<<"  "<<person.size()<<endl;
+	if((o-k)==1){
+		all_poses.erase(all_poses.begin());
+		person.erase(person.begin());
+	}
+	if((o-k)>1){
+		all_poses.erase(all_poses.begin(), all_poses.end()-k+1);
+		//person.erase(person.begin(), person.begin()+(o-k)+1);
+		person.erase(person.begin(), person.end()-k+1);
+	}
+    for (int i = 0; i< (int)all_poses.size(); i++) {
 		cout<<"here2  "<<i<<endl;
         for (vector<HumanPose>::iterator  it = all_poses[i].begin(); it != all_poses[i].end();){
 			cout<<"here3"<<endl;
