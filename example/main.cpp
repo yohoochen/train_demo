@@ -76,7 +76,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 	cout<<"00  "<<size<<endl;
 	RotatedRect rect;
     for (int i = 0; i< size; i++){
-        
+
 		cout<<"11"<<endl;
 
 		// angle
@@ -137,7 +137,6 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
 			continue;
 		}
 		cout<<"1"<<endl;
-
 		double min = 100000;
 		int index = 0;
         for (int i = 0; i < size; i++){
@@ -171,17 +170,29 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
     }
     int o = all_poses.size();
 	int k = poses.size();
-	cout<<"o  "<<o<<"    k  "<<k<<endl;
-	cout<<all_poses.size()<<"  "<<person.size()<<endl;
-	if((o-k)==1){
-		all_poses.erase(all_poses.begin());
-		person.erase(person.begin());
-	}
-	if((o-k)>1){
-		all_poses.erase(all_poses.begin(), all_poses.end()-k+1);
-		//person.erase(person.begin(), person.begin()+(o-k)+1);
-		person.erase(person.begin(), person.end()-k+1);
-	}
+    vector<cv::Point2f> tmp_person;
+    vector<vector<HumanPose>> tmp_all_poses;
+	cout<<"poses  "<<k<<endl;
+	cout<<"all_poses  "<<all_poses.size()<<"  person  "<<person.size()<<endl;
+    for (int m = 0; m < o; m++){
+        if(m >= (o-k)){
+            tmp_all_poses.push_back(all_poses[m]);
+            tmp_person.push_back(person[m])
+        }
+    }
+    all_poses.clear();
+    person.clear();
+    all_poses = tmp_all_poses;
+    person = tmp_person;
+//	if((o-k)==1){
+//		all_poses.erase(all_poses.begin());
+//		person.erase(person.begin());
+//	}
+//	if((o-k)>1){
+//		all_poses.erase(all_poses.begin(), all_poses.end()-k+1);
+//		//person.erase(person.begin(), person.begin()+(o-k)+1);
+//		person.erase(person.begin(), person.end()-k+1);
+//	}
     for (int i = 0; i< (int)all_poses.size(); i++) {
 		cout<<"here2  "<<i<<endl;
         for (vector<HumanPose>::iterator  it = all_poses[i].begin(); it != all_poses[i].end();){
