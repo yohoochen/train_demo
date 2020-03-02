@@ -227,7 +227,7 @@ int main(int argc, const char** argv){
     Object_Detection::Object_detect net(model_file);
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
-    cv::VideoCapture cap("help/3.mp4");
+    cv::VideoCapture cap("/home/nvidia/videos/video1/Camera_16/Data_20200107_005634_L.avi");
 //    cv::VideoCapture cap(0);
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
@@ -237,7 +237,7 @@ int main(int argc, const char** argv){
     cv::VideoWriter outputVideo;
     cv::Size s = cv::Size((int)cap.get(CV_CAP_PROP_FRAME_WIDTH),
                           (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-    outputVideo.open("g_video/wave.avi", CV_FOURCC('X','V','I','D'), 25.0,
+    outputVideo.open("g_video/test2.avi", CV_FOURCC('X','V','I','D'), 25.0,
                      s, true);
 
 	// keep
