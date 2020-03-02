@@ -12,10 +12,9 @@ namespace Object_Detection{
     constexpr static int ouputSize = inputSize/4 ;
     constexpr static int kernelSize = 4 ;
 
-    constexpr static int classNum = 1 ;
-    constexpr static float mean[]= {0.408, 0.447, 0.470};
-    constexpr static float std[] = {0.289, 0.274, 0.278};
-//    constexpr static char *className[]= {(char*)"train",(char*)"Red_light",(char*)"Person",(char*)"Green_light"};
-    constexpr static char *className[]= {(char*)"head"};
+    constexpr static int classNum = 3 ;
+    constexpr static float mean[]= {0.373711, 0.377281,0.378505};
+    constexpr static float std[] = {0.209044, 0.208966, 0.211592};
+    constexpr static char *className[]= {(char*)"Mask_head",(char*)"Clear_head",(char*)"Unclear_head"};
 }
 #endif //CTDET_TRT_CTDETCONFIG_H

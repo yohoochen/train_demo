@@ -27,8 +27,10 @@ namespace Object_Detection
 
 
 //    static std::string CLASSES[4] = {"train", "Red_light","Person","Green_light"};
-    static std::string CLASSES[1] = {"head"};
+    //static std::string CLASSES[1] = {"head"};
+	static std::string CLASSES[3] = {"Mask_head","Unclear_head", "No mask"};
     static std::string STATUS[3] = {"comfortable", "normal", "crowded"};
+	static int no_mask_frame;
     static std::vector<cv::Point> contours;
     static std::vector<cv::Point> contours2;
     static cv::Scalar COLOR[4]={cv::Scalar(18,87,220),cv::Scalar(255,0,252),cv::Scalar(0,0,255),cv::Scalar(0,255,0)};
@@ -37,7 +39,7 @@ namespace Object_Detection
 
     void draw_bb_top(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color);
     bool area(cv::Mat &img_, std::string &name, cv::Point &pt_lt, cv::Point &pt_br, cv::Scalar &color);
-    void getResult(std::pair<std::string, int> &result, cv::Mat &img, std::vector<Object> &Obj_pool);
+    bool getResult(std::pair<std::string, int> &result, cv::Mat &img, std::vector<Object> &Obj_pool);
     void getMemory(int i, int &max);
     class Object_detect
     {
