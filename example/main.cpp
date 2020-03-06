@@ -25,8 +25,40 @@ using namespace human_pose_estimation;
 using namespace cv;
 typedef std::pair<string, int> Result;
 
+bool area(int type, cv::Point center, RotatedRect rect){
+	vector<cv::Point> contours;
+	double result;
+	if(type == 1){
+        Point2f vertices[4];      //定义矩形的4个顶点
+        rect.points(vertices);   //计算矩形的4个顶点
+        contours.emplace_back(cv::Point(400, 360));
+        contours.emplace_back(cv::Point(880, 360));
+        contours.emplace_back(cv::Point(980, 720));
+        contours.emplace_back(cv::Point(300, 720));
+        for(int i = 0 ; i < 4 ; i++ ){
+            result = pointPolygonTest(contours, vertices[i], false);
+            if(result != 1){
+//                cout<<"zzzz"<<endl;
+                return false;
+            }
+        }
+//		cout<<"qqqq"<<endl;
+		return true;
+	}
+	if(type == 2){
+        contours.emplace_back(cv::Point(400, 230));
+        contours.emplace_back(cv::Point(880, 230));
+        contours.emplace_back(cv::Point(980, 720));
+        contours.emplace_back(cv::Point(300, 720));
+        result = pointPolygonTest(contours, center, false);
+		if(result == 1){
+			return true;
+		}
+		return false;
+	}
+}
 //&neck&rhip&lhip[0,1,2]
-bool judge(const float body[][2]) {
+bool judge(const float body[][2], RotatedRect rect) {
     float center[2];
     if(body[0][0] == -1 || body[1][0] == -1 || body[2][0] == -1){
         return false;
@@ -35,10 +67,14 @@ bool judge(const float body[][2]) {
     center[1] = (body[1][1] + body[2][1])/2;
     float k = atan2(center[1]-body[0][1],body[0][0]-center[0]);
 	//cout<<"k  "<<k<<"++"<<M_PI*5/12<<"++"<<M_PI*7/12<<endl;
-    if(k >= M_PI*3/12 && k <= M_PI*9/12){
+	cv::Point point = cv::Point(center[0],center[1]);
+    if(k >= M_PI*1/6 && k <= M_PI*5/6){
         return false;
     }
-    return true;
+	if(area(1, point, rect)){
+    	return true;
+	}
+	return false;
 }
 
 void fall(std::vector<HumanPose> poses, cv::Mat &frame){
@@ -51,13 +87,15 @@ void fall(std::vector<HumanPose> poses, cv::Mat &frame){
 		}
         float body[3][2] = {{pose.keypoints[1].x , pose.keypoints[1].y}, {pose.keypoints[8].x, pose.keypoints[8].y}, {pose.keypoints[11].x, pose.keypoints[11].y}};
 
-        if(judge(body)){
+        rect = cv::minAreaRect(keypoint);
+        if(judge(body, rect)){
             //cout<<"falling"<<endl;
-
-		    rect = cv::minAreaRect(keypoint);
-		    cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
+			cout<<"rect.size.width"<<rect.size.width<<endl;
+			if(rect.size.width > 200){
+		    	cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
             //std::cout<<"keypoint"<<keypoint<<endl;
-            cv::putText(frame,"falling",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(255,255,255),4,8);
+            	cv::putText(frame,"falling",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(255,255,255),4,8);
+			}
         }
 
     }
@@ -98,7 +136,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 		cout<<"22   "<<min<<"((("<<max<<"((("<<M_PI/3<<"((("<<M_PI/2<<endl;
 
 
-		if(((max - min) > M_PI/3) && (max > M_PI/2)){
+		if(((max - min) > M_PI/2) && (max > M_PI/2)){
 			vector<cv::Point2f> keypoint;
 			for(cv::Point2f point : persons[i][n-1].keypoints){
 				//cout<<point.x<<"++"<<point.y<<endl;
@@ -108,10 +146,12 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
             //cout<<"waving"<<n<<endl;
 		    rect = cv::minAreaRect(keypoint);
 			//cout<<"22-1"<<endl;
-		    cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
-            std::cout<<"keypoint"<<keypoint<<endl;
-			cv::putText(frame,"waving",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(0,0,0),4,8);
+			if(area(2, rect.center, rect)){
+		    	cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
+            	std::cout<<"keypoint"<<keypoint<<endl;
+				cv::putText(frame,"waving",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(255,255,255),4,8);
 			//cout<<"22-2"<<endl;
+			}
 
 		}
 		//cout<<"33"<<endl;
@@ -228,7 +268,7 @@ int main(int argc, const char** argv){
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
     //cv::VideoCapture cap("/home/nvidia/videos/video1/Camera_16/Data_20200107_005634_L.avi");
-    cv::VideoCapture cap("/home/nvidia/demo/train_demo2/g_video/1583136902540617.mp4");
+    cv::VideoCapture cap("/home/nvidia/L.avi");
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
