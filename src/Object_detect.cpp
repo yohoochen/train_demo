@@ -231,24 +231,24 @@ namespace Object_Detection
 
     void Object_detect::detect(cv::Mat& img, std::vector<Object> &Obj_pool)
     {
-        int start = cv::getTickCount();
+        //int start = cv::getTickCount();
 
 
         auto inputData = prepareImage(img);
 
-        int end_tick = cv::getTickCount();
-        std::cout << " prepareImage time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
+        //int end_tick = cv::getTickCount();
+        //std::cout << " prepareImage time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
 
 
-        start = cv::getTickCount();
+        //start = cv::getTickCount();
 
         doInference(inputData.data(), inference_outputData.get());
 
-        end_tick = cv::getTickCount();
-        std::cout << " doInference time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
+        //end_tick = cv::getTickCount();
+        //std::cout << " doInference time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
 
 
-        start = cv::getTickCount();
+        //start = cv::getTickCount();
 
         int num_det = static_cast<int>(inference_outputData[0]);
         std::vector<Detection> result;
@@ -257,8 +257,8 @@ namespace Object_Detection
         Object_Detection::postProcess(result,img);
         Object_Detection::Result_convert(result,Obj_pool);
 
-        end_tick = cv::getTickCount();
-        std::cout << " postProcess time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
+        //end_tick = cv::getTickCount();
+        //std::cout << " postProcess time:" << 1000.0 * (end_tick - start) / cv::getTickFrequency() << "ms" << std::endl << std::endl;
 
 
     }
@@ -295,11 +295,13 @@ namespace Object_Detection
         return false;
     }
 
-    void getResult(std::pair<std::string, int> &result, cv::Mat &img, std::vector<Object> &Obj_pool) {
+    bool getResult(std::pair<std::string, int> &result, cv::Mat &img, std::vector<Object> &Obj_pool) 	{
 //        int count = 0;
         int count = Obj_pool.size();
 //        int count2 = 0;
         int num;
+        int no_mask = 0;
+        //bool Find_NoMask = false;
         //cv::line(img,cv::Point(0, 80),cv::Point(1280, 80),cv::Scalar(0, 0, 255),3);
         //cv::line(img,cv::Point(350, 720),cv::Point(550, 80),cv::Scalar(0, 0, 255),3);
 //        cv::line(img_,cv::Point(550, 80),cv::Point(730, 80),cv::Scalar(0, 0, 255),3);
@@ -314,11 +316,15 @@ namespace Object_Detection
 //                count2++;
 //            }
             draw_bb_top(img, Object_Detection::CLASSES[Obj_pool[i].label], tl, br, Object_Detection::COLOR[Obj_pool[i].label]);
+			
+            if(Obj_pool[i].label ==2){
+                no_mask++;
+			}
         }
-        if(count <= 10){
+        if(count <= 8){
             getMemory(0,num);
             result.first = Object_Detection::STATUS[num];
-        }else if(count < 15){
+        }else if(count < 20){
             getMemory(1,num);
             result.first = Object_Detection::STATUS[num];
         }else{
@@ -326,10 +332,28 @@ namespace Object_Detection
             result.first = Object_Detection::STATUS[num];
         }
         result.second = count;
+
+		if(no_mask>0){
+			Object_Detection::no_mask_frame++;
+		}else{
+			Object_Detection::no_mask_frame--;
+		}
+		std::cout<<"Object_Detection::no_mask_frame"<<Object_Detection::no_mask_frame<<std::endl;
+        if(Object_Detection::no_mask_frame>10){
+            Object_Detection::no_mask_frame = 10;
+        }
+        if(Object_Detection::no_mask_frame<0){
+            Object_Detection::no_mask_frame = 0;
+        }
+        if(Object_Detection::no_mask_frame>3){
+            //Find_NoMask = true;
+			return true;
+        }
+		return false;
     }
 
     void getMemory(int i, int &num) {
-        std::cout<<"memory_size  "<<memory.size()<<std::endl;
+        //std::cout<<"memory_size  "<<memory.size()<<std::endl;
         if(memory.size()==10){
             memory.pop_front();
         }
