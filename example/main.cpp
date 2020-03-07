@@ -33,16 +33,17 @@ bool area(int type, cv::Point center, RotatedRect rect){
         rect.points(vertices);   //计算矩形的4个顶点
         contours.emplace_back(cv::Point(400, 360));
         contours.emplace_back(cv::Point(880, 360));
-        contours.emplace_back(cv::Point(980, 720));
-        contours.emplace_back(cv::Point(300, 720));
+        contours.emplace_back(cv::Point(1130, 720));
+        contours.emplace_back(cv::Point(150, 720));
         for(int i = 0 ; i < 4 ; i++ ){
+			cout<<" vertices[i]"<< vertices[i]<<endl;
             result = pointPolygonTest(contours, vertices[i], false);
             if(result != 1){
-//                cout<<"zzzz"<<endl;
+                cout<<"zzzz"<<endl;
                 return false;
             }
         }
-//		cout<<"qqqq"<<endl;
+		cout<<"qqqq"<<endl;
 		return true;
 	}
 	if(type == 2){
@@ -58,7 +59,7 @@ bool area(int type, cv::Point center, RotatedRect rect){
 	}
 }
 //&neck&rhip&lhip[0,1,2]
-bool judge(const float body[][2], RotatedRect rect) {
+bool judge(const float body[][2], vector<cv::Point2f> keypoint) {
     float center[2];
     if(body[0][0] == -1 || body[1][0] == -1 || body[2][0] == -1){
         return false;
@@ -71,6 +72,7 @@ bool judge(const float body[][2], RotatedRect rect) {
     if(k >= M_PI*1/6 && k <= M_PI*5/6){
         return false;
     }
+	RotatedRect rect = cv::minAreaRect(keypoint);
 	if(area(1, point, rect)){
     	return true;
 	}
@@ -79,6 +81,7 @@ bool judge(const float body[][2], RotatedRect rect) {
 
 void fall(std::vector<HumanPose> poses, cv::Mat &frame){
 	RotatedRect rect;
+	cout<<"00"<<endl;
     for (HumanPose const& pose : poses) {
     	vector<cv::Point2f> keypoint;
 		for(cv::Point2f point : pose.keypoints){
@@ -86,10 +89,13 @@ void fall(std::vector<HumanPose> poses, cv::Mat &frame){
 			keypoint.push_back(point);
 		}
         float body[3][2] = {{pose.keypoints[1].x , pose.keypoints[1].y}, {pose.keypoints[8].x, pose.keypoints[8].y}, {pose.keypoints[11].x, pose.keypoints[11].y}};
-
-        rect = cv::minAreaRect(keypoint);
-        if(judge(body, rect)){
+		cout<<"11"<<endl;
+		cout<<"keypoint.size()"<<keypoint.size()<<endl;
+		cout<<"22"<<endl;
+        if(judge(body, keypoint)){
+			cout<<"11"<<endl;
             //cout<<"falling"<<endl;
+        	rect = cv::minAreaRect(keypoint);
 			cout<<"rect.size.width"<<rect.size.width<<endl;
 			if(rect.size.width > 200){
 		    	cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
@@ -268,7 +274,7 @@ int main(int argc, const char** argv){
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
     //cv::VideoCapture cap("/home/nvidia/videos/video1/Camera_16/Data_20200107_005634_L.avi");
-    cv::VideoCapture cap("/home/nvidia/L.avi");
+    cv::VideoCapture cap("/home/nvidia/demo/train_demo/fall/1.avi");
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
@@ -302,7 +308,9 @@ int main(int argc, const char** argv){
         Result result;
 //        draw img
 	// draw falling
+		cout<<"0"<<endl;
         fall(poses, frame);
+		cout<<"1"<<endl;
 	// draw waving
 		wave_hands(poses, frame, person, all_poses);
 	// draw pose
