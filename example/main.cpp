@@ -49,8 +49,8 @@ bool area(int type, cv::Point center, RotatedRect rect){
 	if(type == 2){
         contours.emplace_back(cv::Point(400, 230));
         contours.emplace_back(cv::Point(880, 230));
-        contours.emplace_back(cv::Point(980, 720));
-        contours.emplace_back(cv::Point(300, 720));
+        contours.emplace_back(cv::Point(980, 600));
+        contours.emplace_back(cv::Point(300, 600));
         result = pointPolygonTest(contours, center, false);
 		if(result == 1){
 			return true;
@@ -152,11 +152,12 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 				if(int(point.x) == -1){continue;}
 				keypoint.push_back(point);
 			}
+			cout<<"22-1"<<endl;
 			int limit = keypoint.size();
 			if(limit <=7){continue;}
             //cout<<"waving"<<n<<endl;
 		    rect = cv::minAreaRect(keypoint);
-			//cout<<"22-1"<<endl;
+			cout<<"22-2"<<endl;
 			if(area(2, rect.center, rect)){
 		    	cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
             	std::cout<<"keypoint"<<keypoint<<endl;
