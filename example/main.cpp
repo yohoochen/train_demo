@@ -131,7 +131,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 		//cout<<"n  "<<n<<endl;
 		if(n == 0){
 			//persons.erase(persons.begin());
-			continue;		
+			continue;	
 		}
 		for(int j = 0; j< n; j++){
 			angle = atan2(persons[i][j].keypoints[3].y - persons[i][j].keypoints[4].y, persons[i][j].keypoints[4].x - persons[i][j].keypoints[3].x);
@@ -140,7 +140,10 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 			if(angle < min){ min = angle; }
 		}
 		cout<<"22   "<<min<<"((("<<max<<"((("<<M_PI/3<<"((("<<M_PI/2<<endl;
-
+		if(abs(persons[i][n-1].keypoints[8].x-persons[i][n-1].keypoints[11].x)<50){
+			cout<<"nonononononono   "<<abs(persons[i][n-1].keypoints[8].x-persons[i][n-1].keypoints[11].x)<<endl;
+			continue;
+		}
 
 		if(((max - min) > M_PI/2) && (max > M_PI/2)){
 			vector<cv::Point2f> keypoint;
@@ -149,6 +152,8 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 				if(int(point.x) == -1){continue;}
 				keypoint.push_back(point);
 			}
+			int limit = keypoint.size();
+			if(limit <=7){continue;}
             //cout<<"waving"<<n<<endl;
 		    rect = cv::minAreaRect(keypoint);
 			//cout<<"22-1"<<endl;
@@ -244,7 +249,7 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
         for (vector<HumanPose>::iterator  it = all_poses[i].begin(); it != all_poses[i].end();){
 			//cout<<"here3"<<endl;
 			//cout<<(*it).keypoints<<endl;
-            if((*it).keypoints[4].x == -1 || (*it).keypoints[3].x == -1){
+            if((*it).keypoints[4].x == -1 || (*it).keypoints[3].x == -1 || (*it).keypoints[8].x == -1 || (*it).keypoints[11].x == -1){
 				//cout<<"here4"<<endl;
                 it = all_poses[i].erase(it);
 				//cout<<"here4.1"<<endl;
@@ -274,7 +279,7 @@ int main(int argc, const char** argv){
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
     //cv::VideoCapture cap("/home/nvidia/videos/video1/Camera_16/Data_20200107_005634_L.avi");
-    cv::VideoCapture cap("/home/nvidia/demo/train_demo/fall/1.avi");
+    cv::VideoCapture cap("/home/nvidia/demo/train_demo/help/L.avi");
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
