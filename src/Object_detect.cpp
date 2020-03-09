@@ -321,15 +321,22 @@ namespace Object_Detection
                 no_mask++;
 			}
         }
-        if(count <= 8){
+        if(count <= 10){
             getMemory(0,num);
-            result.first = Object_Detection::STATUS[num];
-        }else if(count < 20){
+//            result.first = Object_Detection::STATUS[num];
+            result.first = "2";
+        }else if(count <= 15){
             getMemory(1,num);
-            result.first = Object_Detection::STATUS[num];
+//            result.first = Object_Detection::STATUS[num];
+            result.first = "4";
+        }else if(count <= 18){
+            getMemory(1,num);
+//            result.first = Object_Detection::STATUS[num];
+            result.first = "6";
         }else{
             getMemory(2,num);
-            result.first = Object_Detection::STATUS[num];
+//            result.first = Object_Detection::STATUS[num];
+            result.first = "8";
         }
         result.second = count;
 
