@@ -172,7 +172,7 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 }
 
 //0nose, 1neck, 2Rsho, 3Relb, 4Rwri, 5Lsho, 6Lelb, 7Lwri, 8Rhip, 9Rkne, 10Rank, 11Lhip, 12Lkne, 13Lank, 14Leye, 15Reye, 16Lear, 17Rear
-void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2f> &person,   vector<vector<HumanPose>> &all_poses){
+void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2f> &person,   vector<vector<HumanPose>> &all_poses, int maximum){
 	
 	//cout<<"here"<<endl;
     for (HumanPose const& pose : poses) {
@@ -222,12 +222,17 @@ void wave_hands(std::vector<HumanPose> &poses, cv::Mat &frame, vector<cv::Point2
     }
     int o = all_poses.size();
 	int k = poses.size();
+
+	if(maximum > k){
+		maximum = k;
+	}
+
     vector<cv::Point2f> tmp_person = {};
     vector<vector<HumanPose>> tmp_all_poses = {};
 	//cout<<"poses  "<<k<<endl;
 	//cout<<"all_poses  "<<all_poses.size()<<"  person  "<<person.size()<<endl;
     for (int m = 0; m < o; m++){
-        if(m >= (o-k)){
+        if(m >= (o-maximum)){
             tmp_all_poses.push_back(all_poses[m]);
             tmp_person.push_back(person[m]);
         }
@@ -280,7 +285,7 @@ int main(int argc, const char** argv){
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
     //cv::VideoCapture cap("/home/nvidia/videos/video1/Camera_16/Data_20200107_005634_L.avi");
-    cv::VideoCapture cap("/home/nvidia/Pictures/六号线视频/Data_20200309_140950_L.avi");
+    cv::VideoCapture cap("/home/nvidia/Pictures/六号线视频/Data_20200309_140057_L.avi");
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
@@ -289,7 +294,7 @@ int main(int argc, const char** argv){
     cv::VideoWriter outputVideo;
     cv::Size s = cv::Size((int)cap.get(CV_CAP_PROP_FRAME_WIDTH),
                           (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-    outputVideo.open("g_video/test6.avi", CV_FOURCC('X','V','I','D'), 25.0,
+    outputVideo.open("g_video/bad.avi", CV_FOURCC('X','V','I','D'), 25.0,
                      s, true);
 
 	// keep
@@ -318,7 +323,7 @@ int main(int argc, const char** argv){
         fall(poses, frame);
 		cout<<"1"<<endl;
 	// draw waving
-		wave_hands(poses, frame, person, all_poses);
+		wave_hands(poses, frame, person, all_poses, Obj_pool.size());
 	// draw pose
         renderHumanPose(poses, frame);
 	//draw head
