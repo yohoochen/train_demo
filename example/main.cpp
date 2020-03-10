@@ -97,7 +97,7 @@ void fall(std::vector<HumanPose> poses, cv::Mat &frame){
             //cout<<"falling"<<endl;
         	rect = cv::minAreaRect(keypoint);
 			cout<<"rect.size.width"<<rect.size.width<<endl;
-			if(rect.size.width > 200){
+			if(rect.size.width > 250){
 		    	cv::rectangle(frame, rect.boundingRect(), cv::Scalar(0, 0, 255), 2);
             //std::cout<<"keypoint"<<keypoint<<endl;
             	cv::putText(frame,"falling",cv::Point(rect.center.x,rect.center.y), cv::FONT_HERSHEY_SIMPLEX, 1.5,cv::Scalar(255,255,255),4,8);
@@ -280,7 +280,7 @@ int main(int argc, const char** argv){
     //std::unique_ptr<float[]> outputData(new float[net.outputBufferSize]);
     cv::Mat frame;
     //cv::VideoCapture cap("/home/nvidia/videos/video1/Camera_16/Data_20200107_005634_L.avi");
-    cv::VideoCapture cap("/home/nvidia/demo/train_demo/help/L.avi");
+    cv::VideoCapture cap("/home/nvidia/Pictures/六号线视频/Data_20200309_140950_L.avi");
     cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
 
@@ -289,7 +289,7 @@ int main(int argc, const char** argv){
     cv::VideoWriter outputVideo;
     cv::Size s = cv::Size((int)cap.get(CV_CAP_PROP_FRAME_WIDTH),
                           (int)cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-    outputVideo.open("g_video/test2.avi", CV_FOURCC('X','V','I','D'), 25.0,
+    outputVideo.open("g_video/test6.avi", CV_FOURCC('X','V','I','D'), 25.0,
                      s, true);
 
 	// keep
