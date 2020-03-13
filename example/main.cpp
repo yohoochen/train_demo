@@ -147,10 +147,20 @@ void waving(vector<vector<HumanPose>> &persons,cv::Mat &frame){
 
 		if(((max - min) > M_PI/2) && (max > M_PI/2)){
 			vector<cv::Point2f> keypoint;
+			int face_points = 0;
+			int face = 0;
 			for(cv::Point2f point : persons[i][n-1].keypoints){
 				//cout<<point.x<<"++"<<point.y<<endl;
+				if(face_points == 0||face_points == 14||face_points == 15||face_points == 16||face_points == 17){
+					if(int(point.x) != -1){face++;}
+				}
+				face_points++;
 				if(int(point.x) == -1){continue;}
 				keypoint.push_back(point);
+			}
+			if(face <=4){
+				cout<<"++++++face+++++++"<<face<<endl;
+				continue;
 			}
 			cout<<"22-1"<<endl;
 			int limit = keypoint.size();
